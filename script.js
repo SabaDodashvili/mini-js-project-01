@@ -9,7 +9,7 @@ window.onload = function () {
     if (targetElement.closest('.calc__btn')) {
       let lastSymbol = input.value[input.value.length - 1];
 
-      let notNumbers = lastSymbol === '÷' || lastSymbol === '×' || lastSymbol === '%' || lastSymbol === '+' || lastSymbol === '-' || lastSymbol === '.';
+      let lastIsOperator = lastSymbol === '÷' || lastSymbol === '×' || lastSymbol === '%' || lastSymbol === '+' || lastSymbol === '-' || lastSymbol === '.';
       let currentIsOperator =
         targetElement.textContent === '÷' ||
         targetElement.textContent === '×' ||
@@ -21,27 +21,21 @@ window.onload = function () {
         targetElement.textContent === 'c' ||
         targetElement.textContent === '⟵';
 
-      if (targetElement.textContent === '÷' && !notNumbers) {
-        calcString = calcString + ' / ';
-        input.value += targetElement.textContent;
-      } else if (targetElement.textContent === '×' && !notNumbers) {
-        calcString = calcString + ' * ';
-        input.value += targetElement.textContent;
-      } else if (targetElement.textContent === '%' && !notNumbers) {
-        calcString = calcString + ' / 100 * ';
-        input.value += targetElement.textContent;
-      } else if (targetElement.textContent === '+' && !notNumbers) {
-        calcString = calcString + ' + ';
-        input.value += targetElement.textContent;
-      } else if (targetElement.textContent === '-' && !notNumbers) {
-        calcString = calcString + ' - ';
-        input.value += targetElement.textContent;
-      } else if (targetElement.textContent === '.' && !notNumbers) {
+      if (targetElement.textContent === '÷' && !lastIsOperator) {
+        addSymbols(' / ', targetElement.textContent);
+      } else if (targetElement.textContent === '×' && !lastIsOperator) {
+        addSymbols(' * ', targetElement.textContent);
+      } else if (targetElement.textContent === '%' && !lastIsOperator) {
+        addSymbols(' / 100 * ', targetElement.textContent);
+      } else if (targetElement.textContent === '+' && !lastIsOperator) {
+        addSymbols(' + ', targetElement.textContent);
+      } else if (targetElement.textContent === '-' && !lastIsOperator) {
+        addSymbols(' - ', targetElement.textContent);
+      } else if (targetElement.textContent === '.' && !lastIsOperator) {
         let lastSpace = calcString.lastIndexOf(' ');
         let pointInLastNumber = calcString.indexOf('.', lastSpace);
         if (pointInLastNumber == -1) {
-          calcString = calcString + '.';
-          input.value += targetElement.textContent;
+          addSymbols('.', targetElement.textContent);
         }
       } else if (targetElement.textContent === '=' && input.value.length > 0) {
         input.value = eval(calcString);
@@ -54,21 +48,29 @@ window.onload = function () {
       } else if (targetElement.textContent === '⟵' && input.value.length > 0) {
         if (lastSymbol === '%') {
           calcString = calcString.slice(0, calcString.length - 9);
-          console.log(1);
+        } else if (lastIsOperator && lastSymbol !== '.') {
+          calcString = calcString.slice(0, -3);
         } else {
           calcString = calcString.slice(0, -1);
         }
         input.value = input.value.slice(0, -1);
         return;
       } else if (!currentIsOperator) {
-        calcString = calcString + targetElement.textContent;
-        input.value += targetElement.textContent;
+        addSymbols(false, targetElement.textContent);
       }
     }
   }
+  function addSymbols(calcSymbols, targetElement) {
+    if (calcSymbols) {
+      calcString += calcSymbols;
+    } else {
+      calcString += targetElement;
+    }
+    input.value += targetElement;
+  }
 };
 
-vanilla - tilt;
+// vanilla - tilt;
 VanillaTilt.init(document.querySelectorAll('.vanilla'), {
   max: 5,
   speed: 400,
