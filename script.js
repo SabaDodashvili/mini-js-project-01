@@ -22,23 +22,27 @@ window.onload = function () {
         targetElement.textContent === '⟵';
 
       if (targetElement.textContent === '÷' && !notNumbers) {
-        calcString = calcString + '/';
+        calcString = calcString + ' / ';
         input.value += targetElement.textContent;
       } else if (targetElement.textContent === '×' && !notNumbers) {
-        calcString = calcString + '*';
+        calcString = calcString + ' * ';
         input.value += targetElement.textContent;
       } else if (targetElement.textContent === '%' && !notNumbers) {
-        calcString = calcString + '/ 100 *';
+        calcString = calcString + ' / 100 * ';
         input.value += targetElement.textContent;
       } else if (targetElement.textContent === '+' && !notNumbers) {
-        calcString = calcString + '+';
+        calcString = calcString + ' + ';
         input.value += targetElement.textContent;
       } else if (targetElement.textContent === '-' && !notNumbers) {
-        calcString = calcString + '-';
+        calcString = calcString + ' - ';
         input.value += targetElement.textContent;
       } else if (targetElement.textContent === '.' && !notNumbers) {
-        calcString = calcString + '.';
-        input.value += targetElement.textContent;
+        let lastSpace = calcString.lastIndexOf(' ');
+        let pointInLastNumber = calcString.indexOf('.', lastSpace);
+        if (pointInLastNumber == -1) {
+          calcString = calcString + '.';
+          input.value += targetElement.textContent;
+        }
       } else if (targetElement.textContent === '=' && input.value.length > 0) {
         input.value = eval(calcString);
         calcString = String(eval(calcString));
@@ -49,7 +53,7 @@ window.onload = function () {
         return;
       } else if (targetElement.textContent === '⟵' && input.value.length > 0) {
         if (lastSymbol === '%') {
-          calcString = calcString.slice(0, calcString.length - 7);
+          calcString = calcString.slice(0, calcString.length - 9);
           console.log(1);
         } else {
           calcString = calcString.slice(0, -1);
@@ -64,7 +68,7 @@ window.onload = function () {
   }
 };
 
-// vanilla - tilt;
+vanilla - tilt;
 VanillaTilt.init(document.querySelectorAll('.vanilla'), {
   max: 5,
   speed: 400,
