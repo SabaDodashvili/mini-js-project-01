@@ -6,32 +6,31 @@ window.onload = function () {
   document.querySelector('.calc').addEventListener('click', calcActions);
   function calcActions(e) {
     const targetElement = e.target;
+    let lastSymbol = input.value[input.value.length - 1];
+    let lastIsOperator = lastSymbol === '÷' || lastSymbol === '×' || lastSymbol === '%' || lastSymbol === '+' || lastSymbol === '-' || lastSymbol === '.';
+    let currentIsOperator =
+      targetElement.textContent === '÷' ||
+      targetElement.textContent === '×' ||
+      targetElement.textContent === '%' ||
+      targetElement.textContent === '+' ||
+      targetElement.textContent === '-' ||
+      targetElement.textContent === '.' ||
+      targetElement.textContent === '=' ||
+      targetElement.textContent === 'c' ||
+      targetElement.textContent === '⟵';
+
     if (targetElement.closest('.calc__btn')) {
-      let lastSymbol = input.value[input.value.length - 1];
-
-      let lastIsOperator = lastSymbol === '÷' || lastSymbol === '×' || lastSymbol === '%' || lastSymbol === '+' || lastSymbol === '-' || lastSymbol === '.';
-      let currentIsOperator =
-        targetElement.textContent === '÷' ||
-        targetElement.textContent === '×' ||
-        targetElement.textContent === '%' ||
-        targetElement.textContent === '+' ||
-        targetElement.textContent === '-' ||
-        targetElement.textContent === '.' ||
-        targetElement.textContent === '=' ||
-        targetElement.textContent === 'c' ||
-        targetElement.textContent === '⟵';
-
-      if (targetElement.textContent === '÷' && !lastIsOperator) {
+      if (targetElement.textContent === '÷') {
         addSymbols(' / ', targetElement.textContent);
-      } else if (targetElement.textContent === '×' && !lastIsOperator) {
+      } else if (targetElement.textContent === '×') {
         addSymbols(' * ', targetElement.textContent);
-      } else if (targetElement.textContent === '%' && !lastIsOperator) {
+      } else if (targetElement.textContent === '%') {
         addSymbols(' / 100 * ', targetElement.textContent);
-      } else if (targetElement.textContent === '+' && !lastIsOperator) {
+      } else if (targetElement.textContent === '+') {
         addSymbols(' + ', targetElement.textContent);
-      } else if (targetElement.textContent === '-' && !lastIsOperator) {
+      } else if (targetElement.textContent === '-') {
         addSymbols(' - ', targetElement.textContent);
-      } else if (targetElement.textContent === '.' && !lastIsOperator) {
+      } else if (targetElement.textContent === '.') {
         let lastSpace = calcString.lastIndexOf(' ');
         let pointInLastNumber = calcString.indexOf('.', lastSpace);
         if (pointInLastNumber == -1) {
@@ -59,14 +58,33 @@ window.onload = function () {
         addSymbols(false, targetElement.textContent);
       }
     }
-  }
-  function addSymbols(calcSymbols, targetElement) {
-    if (calcSymbols) {
-      calcString += calcSymbols;
-    } else {
-      calcString += targetElement;
+
+    function addSymbols(calcSymbols, targetElement) {
+      if (calcSymbols) {
+        if (lastIsOperator && lastSymbol === '%') {
+          calcString = calcString.slice(0, calcString.length - 9);
+          input.value = input.value.slice(0, -1);
+          calcString += calcSymbols;
+        } else if (lastIsOperator && isNaN(input.value[input.value.length - 2]) == true) {
+          return;
+        } else if (calcSymbols === ' - ' && lastSymbol !== '+' && lastSymbol !== '-') {
+          calcString += calcSymbols;
+        } else if (lastIsOperator && lastSymbol !== '.') {
+          calcString = calcString.slice(0, calcString.length - 3);
+          input.value = input.value.slice(0, -1);
+          calcString += calcSymbols;
+        } else if (lastIsOperator && lastSymbol === '.') {
+          calcString = calcString.slice(0, calcString.length - 1);
+          input.value = input.value.slice(0, -1);
+          calcString += calcSymbols;
+        } else {
+          calcString += calcSymbols;
+        }
+      } else {
+        calcString += targetElement;
+      }
+      input.value += targetElement;
     }
-    input.value += targetElement;
   }
 };
 
