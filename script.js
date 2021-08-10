@@ -6,6 +6,8 @@ window.onload = function () {
   document.querySelector('.calc').addEventListener('click', calcActions);
   function calcActions(e) {
     const targetElement = e.target;
+    let bracketsStart = calcString.split('(').length - 1;
+    let bracketsEnd = calcString.split(')').length - 1;
     let lastSymbol = input.value[input.value.length - 1];
     let lastIsOperator = lastSymbol === '÷' || lastSymbol === '×' || lastSymbol === '%' || lastSymbol === '+' || lastSymbol === '-' || lastSymbol === '.';
     let currentIsOperator =
@@ -20,23 +22,29 @@ window.onload = function () {
       targetElement.textContent === '⟵';
 
     if (targetElement.closest('.calc__btn')) {
-      if (targetElement.textContent === '÷') {
+      if (targetElement.textContent === '÷' && lastSymbol !== '(') {
         addSymbols(' / ', targetElement.textContent);
-      } else if (targetElement.textContent === '×') {
+      } else if (targetElement.textContent === '×' && lastSymbol !== '(') {
         addSymbols(' * ', targetElement.textContent);
-      } else if (targetElement.textContent === '%') {
+      } else if (targetElement.textContent === '%' && lastSymbol !== '(') {
         addSymbols(' / 100 * ', targetElement.textContent);
-      } else if (targetElement.textContent === '+') {
+      } else if (targetElement.textContent === '+' && lastSymbol !== '(') {
         addSymbols(' + ', targetElement.textContent);
       } else if (targetElement.textContent === '-') {
         addSymbols(' - ', targetElement.textContent);
-      } else if (targetElement.textContent === '.') {
+      } else if (targetElement.textContent === '.' && lastSymbol !== '(') {
         let lastSpace = calcString.lastIndexOf(' ');
         let pointInLastNumber = calcString.indexOf('.', lastSpace);
         if (pointInLastNumber == -1) {
           addSymbols('.', targetElement.textContent);
         }
-      } else if (targetElement.textContent === '=' && input.value.length > 0) {
+      } else if (targetElement.textContent === '=' && input.value.length > 0 && !lastIsOperator) {
+        if (bracketsStart > bracketsEnd) {
+          let bracketsAmount = bracketsStart - bracketsEnd;
+          for (let i = 0; i < bracketsAmount; i++) {
+            calcString += ')';
+          }
+        }
         input.value = eval(calcString);
         calcString = String(eval(calcString));
         return;
@@ -81,6 +89,24 @@ window.onload = function () {
           calcString += calcSymbols;
         }
       } else {
+        if (targetElement === ')') {
+          if (bracketsStart > bracketsEnd && lastSymbol !== '(' && !lastIsOperator) {
+            calcString += targetElement;
+            input.value += targetElement;
+            return;
+          } else {
+            return;
+          }
+        } else if (targetElement === '(') {
+          if (lastIsOperator && lastSymbol !== '.') {
+            calcString += targetElement;
+            input.value += targetElement;
+            return;
+          } else {
+            return;
+          }
+        }
+
         calcString += targetElement;
       }
       input.value += targetElement;
