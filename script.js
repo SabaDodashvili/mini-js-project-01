@@ -1,7 +1,6 @@
 window.onload = function () {
   const input = document.querySelector('.calc__input');
   let calcString = '';
-  let repeatingOperator = true;
 
   document.querySelector('.calc').addEventListener('click', calcActions);
   function calcActions(e) {
@@ -69,7 +68,7 @@ window.onload = function () {
 
     function addSymbols(calcSymbols, targetElement) {
       if (calcSymbols) {
-        if (lastIsOperator && lastSymbol === '%') {
+        if (lastIsOperator && lastSymbol === '%' && calcSymbols !== ' - ') {
           calcString = calcString.slice(0, calcString.length - 9);
           input.value = input.value.slice(0, -1);
           calcString += calcSymbols;
